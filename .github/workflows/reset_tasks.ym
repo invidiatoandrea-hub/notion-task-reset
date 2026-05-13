@@ -1,1 +1,29 @@
+name: Reset Notion Recurring Tasks
 
+on:
+  schedule:
+    # Runs at 23:00 UTC = 00:00 Europe/Rome (CET, UTC+1)
+    # In summer (CEST, UTC+2) this fires at 01:00 Rome time — acceptable tolerance
+    - cron: "0 23 * * *"
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  reset-tasks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run reset script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python reset_tasks.py
